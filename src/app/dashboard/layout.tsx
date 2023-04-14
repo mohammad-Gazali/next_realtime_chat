@@ -1,5 +1,7 @@
 import { FriendRequestsSidebarOption, Icons, SignOutButton, SidebarChatList } from "@/components";
+import MoblieChatLayout from "@/components/MoblieChatLayout";
 import authOptions from "@/lib/auth";
+import { SidebarOption } from "@/types/typings";
 import getFriendsByUserId from "@/utils/getUserFriends";
 import fetchRedis from "@/utils/redis";
 import { getServerSession, User } from "next-auth";
@@ -12,13 +14,6 @@ import { ReactNode } from "react";
 
 interface LayoutProps {
 	children: ReactNode;
-}
-
-interface SidebarOption {
-	id: number;
-	name: string;
-	href: string;
-	icon: ReactNode;
 }
 
 const sidebarOptions: SidebarOption[] = [
@@ -45,7 +40,10 @@ const Layout = async ({ children }: LayoutProps) => {
 
 	return (
 		<div className="w-full flex h-screen">
-			<aside className="flex h-full w-full max-w-xs grow flex-col gap-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
+			<div className="md:hidden ">
+				<MoblieChatLayout session={session} friends={friends} unseenRequestCount={unseenRequestCount} sidebarOptions={sidebarOptions} />
+			</div>
+			<aside className="md:flex hidden h-full w-full max-w-xs grow flex-col gap-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
 				<Link
 					className="flex h-16 shrink-0 items-center text-indigo-600"
 					href="/dashboard"
