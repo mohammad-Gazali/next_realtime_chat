@@ -9,6 +9,7 @@ import Messages from "./Messages";
 import ChatInput from "./ChatInput";
 
 
+
 export {
 	Providers,
 	AddFriendButton,
@@ -18,5 +19,5 @@ export {
     FriendRequests,
 	SidebarChatList,
 	Messages,
-	ChatInput
+	ChatInput,
 };

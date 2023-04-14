@@ -22,24 +22,29 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId }) => {
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	const sendMessage = async () => {
-        setIsLoading(true);
-        try {
+        if (input) {
+            setIsLoading(true);
+            try {
+                
+                await axios.post("/api/message/send", {
+                    text: input,
+                    chatId
+                })
+                
+                setInput("");
+                
+                textareaRef.current?.focus();
+    
+            } catch {
+                
+                toast.error("Something went wrong. Please try again later.")
+    
+            } finally {
+                setIsLoading(false);
+            }
             
-            await axios.post("/api/message/send", {
-                text: input,
-                chatId
-            })
-            
-            setInput("");
-            
-            textareaRef.current?.focus();
-
-        } catch {
-            
-            toast.error("Something went wrong. Please try again later.")
-
-        } finally {
-            setIsLoading(false);
+        } else {
+            toast.error("The message can't be empty.")
         }
     };
 

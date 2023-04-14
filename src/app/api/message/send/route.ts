@@ -1,10 +1,12 @@
 import authOptions from "@/lib/auth";
 import db from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
 import { Message } from "@/types/db";
 import fetchRedis from "@/utils/redis";
+import toPusherKey from "@/utils/toPusherKey";
 import { messageValidator } from "@/utils/validation/message";
 import { nanoid } from "nanoid";
-import { getServerSession } from "next-auth";
+import { getServerSession, User } from "next-auth";
 import { z } from "zod";
 
 
@@ -44,11 +46,11 @@ export async function POST(req: Request) {
 
         const senderResult = await fetchRedis("get", `user:${session.user.id}`) as string;
 
-        const sender = JSON.parse(senderResult);
+        const sender = JSON.parse(senderResult) as User;
 
-        //* all valid, let's send the message 🥳
+        //* all valid, let's send the message 🥳, and trigger the related channel by pusherServer
 
-        const timestamp = Date.now()        
+        const timestamp = Date.now();
 
         const messageData: Message = {
             id: nanoid(),
@@ -59,6 +61,24 @@ export async function POST(req: Request) {
         }
 
         const message = messageValidator.parse(messageData)
+
+        // trigger the related channel
+        pusherServer.trigger(
+            toPusherKey(`chat:${chatId}`),
+            "incoming-message",
+            message,
+        )
+
+        pusherServer.trigger(
+            toPusherKey(`user:${friendId}:chats`),
+            "new_message",
+            {
+                ...message,
+                senderImg: sender.image,
+                senderName: sender.name
+            },
+        )
+
 
         //? "zadd" like "sadd" but the data type is a sorted set called zset (yes like you heard "sorted set" 🙂 it is like an ordered hash map, read about it in https://redis.io/docs/data-types/tutorial/#sorted-sets)
         await db.zadd(`chat:${chatId}:messages`, {

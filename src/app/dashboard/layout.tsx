@@ -45,7 +45,7 @@ const Layout = async ({ children }: LayoutProps) => {
 
 	return (
 		<div className="w-full flex h-screen">
-			<aside className="flex h-full w-full max-w-xs grow flex-col gap-5 overflow-y-auto border-r border-gray-200 bg-white px-6 mr-6">
+			<aside className="flex h-full w-full max-w-xs grow flex-col gap-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
 				<Link
 					className="flex h-16 shrink-0 items-center text-indigo-600"
 					href="/dashboard"

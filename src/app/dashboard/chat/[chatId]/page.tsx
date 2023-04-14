@@ -60,7 +60,7 @@ const page = async ({ params }: { params: { chatId: string } }) => {
       <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
         <div className="relative flex items-center gap-4">
           <div className="relative">
-            <div className="relative sm:w-12 w-8 sm:h-12 h-8">
+            <div className="relative sm:w-12 w-8 sm:h-12 h-8 ml-2">
               <Image
               referrerPolicy="no-referrer"
               className="rounded-full object-cover"
@@ -79,7 +79,7 @@ const page = async ({ params }: { params: { chatId: string } }) => {
           </div>
         </div>
       </div>
-      <Messages chatPartner={chatPartner} sessionImg={session.user.image} initialMessages={initialMessages} sessionId={session.user.id} />
+      <Messages chatId={chatId} chatPartner={chatPartner} sessionImg={session.user.image} initialMessages={initialMessages} sessionId={session.user.id} />
       <ChatInput chatPartner={chatPartner} chatId={chatId} />
     </div>
   )

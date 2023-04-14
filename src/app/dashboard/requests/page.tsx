@@ -30,7 +30,7 @@ const page = async () => {
     );
 
 	return (
-        <main className="pt-8">
+        <main className="pt-8 ml-6">
             <h1 className="font-bold text-5xl mb-8">
                 Friend Requests
             </h1>

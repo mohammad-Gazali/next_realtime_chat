@@ -18,6 +18,7 @@ export interface Message {
     timestamp: number;
 }
 
+
 export interface FriendRequest {
     id: string;
     senderId: string;
