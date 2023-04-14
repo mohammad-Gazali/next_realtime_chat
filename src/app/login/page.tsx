@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 import { Icons } from "@/components";
 
-const page = () => {
+const Page = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [googleLogo, setGoogleLogo] = useState<ReactNode>(null);
 	const [appLogo, setAppLogo] = useState<ReactNode>(null);
@@ -57,4 +57,4 @@ const page = () => {
 	);
 };
 
-export default page;
+export default Page;

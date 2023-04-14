@@ -1,6 +1,8 @@
 import authOptions from "@/lib/auth";
 import db from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
 import fetchRedis from "@/utils/redis";
+import toPusherKey from "@/utils/toPusherKey";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
@@ -44,6 +46,11 @@ export async function POST(req: Request) {
                 status: 400
             })
         }
+
+
+        // notify added user
+        pusherServer.trigger(toPusherKey(`user:${idToAccept}:friends_set`), "new_friend", {})
+
 
         //? add the id to db
         //? here we didn't use fetch "fetchRedis" because no cache behavior we could be afrid of, this because we set a new key (or edit its value) in the database
