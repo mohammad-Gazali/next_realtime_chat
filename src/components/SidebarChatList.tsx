@@ -4,7 +4,7 @@ import { pusherClient } from "@/lib/pusher";
 import { Message, User } from "@/types/db";
 import chatHrefConstructor from "@/utils/chatHrefConstructor";
 import toPusherKey from "@/utils/toPusherKey";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import UnseenMessageToast from "./UnseenMessageToast";
@@ -20,9 +20,9 @@ interface ExtendedMessage extends Message {
 }
 
 const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
+	
 	const [unseenMessages, setUnseenMessages] = useState<Message[]>([]);
-
-	const router = useRouter();
+	const [activeChats, setActiveChats] = useState<User[]>(friends);
 
 	const pathname = usePathname();
 
@@ -61,8 +61,8 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
 			}
 		};
 
-		const newFriendHandler = () => {
-			router.refresh();
+		const newFriendHandler = (newFriend: User) => {
+			setActiveChats(preState => [...preState, newFriend])
 		};
 
 		pusherClient.bind("new_message", chatHandler);
@@ -75,11 +75,12 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
 			pusherClient.unbind("new_message", chatHandler);
 			pusherClient.unbind("new_friend", newFriendHandler);
 		};
-	}, [pathname, sessionId, router]);
+
+	}, [pathname, sessionId]);
 
 	return (
 		<ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
-			{friends.sort().map((friend) => {
+			{activeChats.sort().map((friend) => {
 				const unseenMessagesCount = unseenMessages.filter((unseenMessage) => {
 					return unseenMessage.senderId === friend.id;
 				}).length;

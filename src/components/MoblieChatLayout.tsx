@@ -15,54 +15,43 @@ import { SidebarOption } from "@/types/typings";
 import { User } from "@/types/db";
 import { usePathname } from "next/navigation";
 
-
-
 interface MoblieChatLayoutProps {
-    session: Session;
-    friends: User[];
-    unseenRequestCount: number;
-    sidebarOptions: SidebarOption[];
+	session: Session;
+	friends: User[];
+	unseenRequestCount: number;
+	sidebarOptions: SidebarOption[];
 }
 
-const MoblieChatLayout: FC<MoblieChatLayoutProps> = ({ session, friends, unseenRequestCount, sidebarOptions }) => {
-
-	const [open, setOpen] = useState(false);
+const MobileChatLayout: FC<MoblieChatLayoutProps> = ({
+	friends,
+	session,
+	sidebarOptions,
+	unseenRequestCount,
+}) => {
+	const [open, setOpen] = useState<boolean>(false);
 
 	const pathname = usePathname();
 
 	useEffect(() => {
-		setOpen(false)
-	}, [pathname])
+		setOpen(false);
+	}, [pathname]);
 
 	return (
 		<div className="fixed bg-zinc-50 border-b border-zinc-200 top-0 inset-x-0 py-2 px-4">
 			<div className="w-full flex justify-between items-center">
 				<Link
-					className={buttonVariants({
-						variant: "ghost",
-						className: "text-indigo-600",
-					})}
 					href="/dashboard"
+					className={buttonVariants({ variant: "ghost", className: "text-indigo-600" })}
 				>
 					{Icons.appLogo}
 				</Link>
-				<Button className="gap-4" onClick={() => setOpen(true)}>
-					Menu <Menu className="w-6 h-6" />
+				<Button onClick={() => setOpen(true)} className="gap-4">
+					Menu <Menu className="h-6 w-6" />
 				</Button>
 			</div>
 			<Transition.Root show={open} as={Fragment}>
 				<Dialog as="div" className="relative z-10" onClose={setOpen}>
-					<Transition.Child
-						as={Fragment}
-						enter="ease-in-out duration-500"
-						enterFrom="opacity-0"
-						enterTo="opacity-100"
-						leave="ease-in-out duration-500"
-						leaveFrom="opacity-100"
-						leaveTo="opacity-0"
-					>
-						<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-					</Transition.Child>
+					<div className="fixed inset-0" />
 
 					<div className="fixed inset-0 overflow-hidden">
 						<div className="absolute inset-0 overflow-hidden">
@@ -76,32 +65,24 @@ const MoblieChatLayout: FC<MoblieChatLayoutProps> = ({ session, friends, unseenR
 									leaveFrom="translate-x-0"
 									leaveTo="-translate-x-full"
 								>
-									<Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
-										<Transition.Child
-											as={Fragment}
-											enter="ease-in-out duration-500"
-											enterFrom="opacity-0"
-											enterTo="opacity-100"
-											leave="ease-in-out duration-500"
-											leaveFrom="opacity-100"
-											leaveTo="opacity-0"
-										>
-											<div className="absolute right-0 top-0 -mr-8 flex pr-2 pt-4 sm:-mr-10 sm:pl-4">
-												<button
-													type="button"
-													className="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-													onClick={() => setOpen(false)}
-												>
-													<span className="sr-only">Close panel</span>
-													<X className="h-6 w-6" aria-hidden="true" />
-												</button>
-											</div>
-										</Transition.Child>
-										<div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+									<Dialog.Panel className="pointer-events-auto w-screen max-w-md">
+										<div className="flex h-full flex-col overflow-hidden bg-white py-6 shadow-xl">
 											<div className="px-4 sm:px-6">
-												<Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
-													Panel title
-												</Dialog.Title>
+												<div className="flex items-start justify-between">
+													<Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
+														Dashboard
+													</Dialog.Title>
+													<div className="ml-3 flex h-7 items-center">
+														<button
+															type="button"
+															className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+															onClick={() => setOpen(false)}
+														>
+															<span className="sr-only">Close panel</span>
+															<X className="h-6 w-6" aria-hidden="true" />
+														</button>
+													</div>
+												</div>
 											</div>
 											<div className="relative mt-6 flex-1 px-4 sm:px-6">
 												{/* Content */}
@@ -163,12 +144,11 @@ const MoblieChatLayout: FC<MoblieChatLayoutProps> = ({ session, friends, unseenR
 															<div className="flex flex-1 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900">
 																<div className="relative h-8 w-8 bg-gray-50">
 																	<Image
+																		fill
 																		referrerPolicy="no-referrer"
-                                                                        className="rounded-full object-cover"
-                                                                        width={50}
-                                                                        height={50}
-                                                                        src={session.user.image || ""}
-                                                                        alt="Your Profile Picture"
+																		className="rounded-full"
+																		src={session.user.image || ""}
+																		alt="Your profile picture"
 																	/>
 																</div>
 
@@ -205,4 +185,4 @@ const MoblieChatLayout: FC<MoblieChatLayoutProps> = ({ session, friends, unseenR
 	);
 };
 
-export default MoblieChatLayout;
+export default MobileChatLayout;

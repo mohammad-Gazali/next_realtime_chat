@@ -79,7 +79,7 @@ export async function POST(req: Request) {
 
 		//* valid request state 😀, send friend request, and trigger the related channel by pusherServer
 
-		pusherServer.trigger(
+		await pusherServer.trigger(
 			toPusherKey(`user:${idToAdd}:incoming_friend_requests`),
 			"incoming_friend_requests",
 			{

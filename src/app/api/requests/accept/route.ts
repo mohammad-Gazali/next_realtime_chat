@@ -1,6 +1,7 @@
 import authOptions from "@/lib/auth";
 import db from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
+import { User } from "@/types/db";
 import fetchRedis from "@/utils/redis";
 import toPusherKey from "@/utils/toPusherKey";
 import { getServerSession } from "next-auth";
@@ -47,22 +48,27 @@ export async function POST(req: Request) {
             })
         }
 
+        const [userResult, friendResult] = (await Promise.all([
+            fetchRedis("get", `user:${session.user.id}`),
+            fetchRedis("get", `user:${idToAccept}`),
+        ])) as string[]
 
-        // notify added user
-        pusherServer.trigger(toPusherKey(`user:${idToAccept}:friends_set`), "new_friend", {})
 
+        const user = JSON.parse(userResult) as User;
+        const friend = JSON.parse(friendResult) as User;
 
-        //? add the id to db
-        //? here we didn't use fetch "fetchRedis" because no cache behavior we could be afrid of, this because we set a new key (or edit its value) in the database
-        //? "sadd" method make a key if it doesn't exist and add a set with the value we added, and if the key exist before then we add the new value to the set, and it return an error only if there is already the same key with value of type non-set
-        await db.sadd(`user:${session.user.id}:friends_set`, idToAccept);  //* add him as a friend to me
-        await db.sadd(`user:${idToAccept}:friends_set`, session.user.id);  //* add me as a frined to him
-
-        //? "srem" is like "sadd" except it removes not adds
-        await db.srem(`user:${session.user.id}:incoming_friend_requests`, idToAccept);  //* remove his request from the db, because we added him as a friend to the current user
-        await db.srem(`user:${idToAccept}:incoming_friend_requests`, session.user.id);  //* remove my request (if it exists) from the db, because we added him as a friend to the current user
-
+        
+        await Promise.all([
+            pusherServer.trigger(toPusherKey(`user:${idToAccept}:friends_set`), "new_friend", user),
+            pusherServer.trigger(toPusherKey(`user:${session.user.id}:friends_set`), "new_friend", friend),
+            db.sadd(`user:${session.user.id}:friends_set`, idToAccept),
+            db.sadd(`user:${idToAccept}:friends_set`, session.user.id),  
+            db.srem(`user:${session.user.id}:incoming_friend_requests`, idToAccept),
+            db.srem(`user:${idToAccept}:incoming_friend_requests`, session.user.id),
+        ])
+        
         return new Response("Success");
+
     } catch (error) {
         if (error instanceof z.ZodError) {
             return new Response("Invalid request payload", {

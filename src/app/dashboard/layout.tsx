@@ -40,7 +40,7 @@ const Layout = async ({ children }: LayoutProps) => {
 
 	return (
 		<div className="w-full flex h-screen">
-			<div className="md:hidden ">
+			<div className="md:hidden">
 				<MoblieChatLayout session={session} friends={friends} unseenRequestCount={unseenRequestCount} sidebarOptions={sidebarOptions} />
 			</div>
 			<aside className="md:flex hidden h-full w-full max-w-xs grow flex-col gap-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
@@ -110,7 +110,9 @@ const Layout = async ({ children }: LayoutProps) => {
 					</ul>
 				</nav>
 			</aside>
-			{children}
+			<div className="md:mt-0 mt-16 w-full">
+				{children}
+			</div>
 		</div>
 	);
 };
