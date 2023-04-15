@@ -19,31 +19,36 @@ const page = async () => {
 	const friendsWithLastMessage = await Promise.all(
 		friends.map(async (friend) => {
 			//? here we will take the first item from the sorted set by this destructuring
-			const [lastMessageResult] = (await fetchRedis(
+			const [lastMessageResult] = await fetchRedis(
 				"zrange",
 				`chat:${chatHrefConstructor(session.user.id, friend.id)}:messages`,
 				0,
 				-1
-			)) as string[];
+			);
 
-      const lastMessage = JSON.parse(lastMessageResult) as Message;
+			const lastMessage = lastMessageResult ? JSON.parse(lastMessageResult) as Message : null;
 
-			return {
-				...friend,
-				lastMessage,
-			};
+			if (lastMessage) {
+				return {
+					...friend,
+					lastMessage,
+				}
+			}
+
+			return null
+
 		})
 	);
 
 	return (
 		<div className="container mx-6 py-12">
 			<h1 className="font-bold text-5xl mb-8">Recent chats</h1>
-			{friendsWithLastMessage.length === 0 ? (
+			{friendsWithLastMessage.length === 0 || friendsWithLastMessage.some(friend => friend === null) ? (
 				<p className="text-sm text-zinc-500">Nothing to show here...</p>
 			) : (
 				friendsWithLastMessage.map((friend) => (
 					<div
-						key={friend.id}
+						key={friend!.id}
 						className="relative bg-zinc-50 border border-zinc-200 p-3 rounded-md max-w-xs"
 					>
 						<div className="absolute right-4 inset-y-0 flex items-center">
@@ -52,7 +57,7 @@ const page = async () => {
 						<Link
 							href={`/dashboard/chat/${chatHrefConstructor(
 								session.user.id,
-								friend.id
+								friend!.id
 							)}`}
 							className="relative sm:flex"
 						>
@@ -63,26 +68,22 @@ const page = async () => {
 										className="rounded-full object-cover"
 										width={40}
 										height={40}
-										src={friend.image}
-										alt={`${friend.name} profile picture`}
+										src={friend!.image}
+										alt={`${friend!.name} profile picture`}
 									/>
 								</div>
 							</div>
-              <div>
-                <h4 className="text-lg font-semibold">{friend.name}</h4>
-                <p className="mt-1 max-w-md">
-                  <span className="text-zinc-400 mr-2">
-                    {
-                      friend.lastMessage.senderId === session.user.id  // you sended the last message
-                      ?
-                      "You:"
-                      :
-                      ""
-                    }
-                  </span>
-                  {friend.lastMessage.text}
-                </p>
-              </div>
+							<div>
+								<h4 className="text-lg font-semibold">{friend!.name}</h4>
+								<p className="mt-1 max-w-md">
+									<span className="text-zinc-400 mr-2">
+										{friend!.lastMessage?.senderId === session.user.id // you sended the last message
+											? "You:"
+											: ""}
+									</span>
+									{friend!.lastMessage?.text}
+								</p>
+							</div>
 						</Link>
 					</div>
 				))
