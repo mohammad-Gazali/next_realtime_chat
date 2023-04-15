@@ -57,7 +57,7 @@ const page = async ({ params }: { params: { chatId: string } }) => {
 
   return (
     <div className="flex-1 flex flex-col justify-between h-full max-h-[calc(100vh-6rem)]">
-      <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
+      <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200 z-20">
         <div className="relative flex items-center gap-4">
           <div className="relative">
             <div className="relative sm:w-12 w-8 sm:h-12 h-8 ml-2">
